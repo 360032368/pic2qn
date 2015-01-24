@@ -1,0 +1,5 @@
+<?php
+
+$bucket = 'phpsdk';
+$accessKey = '<YOUR_APP_ACCESS_KEY>';
+$secretKey = '<YOUR_APP_SECRET_KEY>';
