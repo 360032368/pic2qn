@@ -30,13 +30,44 @@ Class Pic2qn {
 		}
 	}
 
+	public function get2send($url){
+
+		$file_info = $this->remote2local($url);
+		if(count($file_info)==0) return array();
+
+		$file = $file_info['full'];
+		$qn_key = str_replace($this->local, '', $file);
+
+		$file_real_path = dirname(__FILE__).$file;
+		$result = $this->local2qn($qn_key,$file_real_path);
+
+		$file_info['key'] = $qn_key;
+		if($result){
+			return $file_info;
+		}else{
+			return array();
+		}
+
+	}
+
 	public function remote2local($url){
-		//$this->$curl->reutersload()
-		//echo 1;
 		$file = $this->create_file_path($url);
 		$this->curl->reutersload($url,$file['full']);
 		if(file_exists($file['full'])) return $file;
-		else return null;
+		else return array();
+	}
+
+	public function local2qn($key,$file){
+
+		Qiniu_SetKeys($this->accessKey, $this->secretKey);
+		$putPolicy = new Qiniu_RS_PutPolicy($this->bucket);
+		$upToken = $putPolicy->Token(null);
+		$putExtra = new Qiniu_PutExtra();
+		$putExtra->Crc32 = 1;
+		list($ret, $err) = Qiniu_PutFile($upToken, $key, $file, $putExtra);
+		var_dump($err);
+		return ($err == null);
+
 	}
 
 	private function create_file_path($url = 'png'){
@@ -47,15 +78,16 @@ Class Pic2qn {
 			mkdir($path);
 		}
 
-		$path.= date('Ym',$time).'/';
+		$path.= date('Ymd',$time).'/';
 		if(!is_dir($path)){
 			mkdir($path);
 		}
 
 		$name = md5($time);
 
-		$str = explode('.',parse_url($url)['path']); 
-		$ext = $str[count($str)-1];
+		$arr_path = parse_url($url);
+		$str_path = explode('.',$arr_path['path']);
+		$ext = $str_path[count($str_path)-1];
 
 		$file = $name.'.'.$ext;
 
