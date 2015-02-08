@@ -38,10 +38,11 @@ Class Pic2qn {
 		$file = $file_info['full'];
 		$qn_key = str_replace($this->local, '', $file);
 
-		$file_real_path = dirname(__FILE__).$file;
+		$file_real_path = $file;//dirname(__FILE__).str_replace('./', '/', $file);
 		$result = $this->local2qn($qn_key,$file_real_path);
 
 		$file_info['key'] = $qn_key;
+		//print_r($result);
 		if($result){
 			return $file_info;
 		}else{
@@ -65,7 +66,7 @@ Class Pic2qn {
 		$putExtra = new Qiniu_PutExtra();
 		$putExtra->Crc32 = 1;
 		list($ret, $err) = Qiniu_PutFile($upToken, $key, $file, $putExtra);
-		var_dump($err);
+		//var_dump($err);
 		return ($err == null);
 
 	}
