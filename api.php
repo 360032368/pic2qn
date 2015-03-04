@@ -23,3 +23,5 @@ if(count($result)>0){
 }
 
 echo json_encode($out);
+
+//$p2q->remove2qn($url);移除远程图片

@@ -104,4 +104,16 @@ Class Pic2qn {
 
 	}
 
+	public function remove2qn($url){
+		$tmp = parse_url($url);
+		$path = $tmp['path'];
+		if( $path[0] === '/' ) $path = substr($path, 1);
+
+		Qiniu_SetKeys($this->accessKey, $this->secretKey);
+		$client = new Qiniu_MacHttpClient(null);
+
+		$err = Qiniu_RS_Delete($client,$this->bucket,$path);
+		return ($err == null);
+	}
+
 }
